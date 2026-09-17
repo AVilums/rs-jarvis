@@ -47,12 +47,8 @@ pub fn initialize(host_window: isize) -> anyhow::Result<()> {
         SetConsoleTitleW(title.as_ptr());
         let console = GetConsoleWindow();
         if host_window != 0 && !console.is_null() {
-            PostMessageW(
-                host_window as _,
-                crate::host::WM_TERMINAL_READY,
-                console as usize,
-                0,
-            );
+            const WM_TERMINAL_READY: u32 = 0x8000 + 2;
+            PostMessageW(host_window as _, WM_TERMINAL_READY, console as usize, 0);
         }
     }
 

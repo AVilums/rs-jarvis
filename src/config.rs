@@ -41,6 +41,16 @@ pub enum Connector {
 }
 
 impl Config {
+    pub fn from_sources(base: &str, local_override: Option<&str>) -> Result<Self> {
+        let mut values: toml::Value = toml::from_str(base).context("invalid base configuration")?;
+        if let Some(local_override) = local_override {
+            let local_values =
+                toml::from_str(local_override).context("invalid local configuration")?;
+            merge(&mut values, local_values);
+        }
+        Self::from_values(values)
+    }
+
     pub fn load() -> Result<Self> {
         let path = config_path()?;
 
@@ -74,6 +84,10 @@ impl Config {
             merge(&mut values, local_values);
         }
 
+        Self::from_values(values)
+    }
+
+    fn from_values(values: toml::Value) -> Result<Self> {
         let config: Config = values
             .try_into()
             .context("merged configuration is invalid")?;

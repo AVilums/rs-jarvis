@@ -29,3 +29,9 @@ open the terminal again. Choose **Exit** from the tray menu to stop Jarvis.
 
 Commands inside the chat are `/clear`, `/hide`, and `/exit`. `/exit` closes the
 current terminal session; the tray host remains available on Windows.
+
+## Delivery
+
+Pull requests run formatting, Clippy, tests, and a release-mode Windows build.
+Every successful push to `main` publishes an immutable GitHub Release containing
+the Windows executable and its SHA-256 checksum.

@@ -44,12 +44,25 @@ struct ResponseRequest<'a> {
     store: bool,
 }
 
-#[derive(Deserialize)]
-struct StreamEvent {
+#[derive(Debug, Deserialize)]
+pub struct StreamEvent {
     #[serde(rename = "type")]
-    kind: String,
-    delta: Option<String>,
-    message: Option<String>,
+    pub kind: String,
+    pub delta: Option<String>,
+    pub message: Option<String>,
+}
+
+pub fn parse_stream_line(line: &str) -> Result<Option<StreamEvent>> {
+    let Some(data) = line.trim_end_matches('\r').strip_prefix("data: ") else {
+        return Ok(None);
+    };
+    if data == "[DONE]" {
+        return Ok(None);
+    }
+
+    serde_json::from_str(data)
+        .map(Some)
+        .context("received an invalid streaming event")
 }
 
 impl LlmClient {
@@ -101,17 +114,9 @@ impl LlmClient {
                 let line = String::from_utf8(pending[..end].to_vec())
                     .context("stream contained invalid UTF-8")?;
                 pending.drain(..=end);
-                let line = line.trim_end_matches('\r');
-
-                let Some(data) = line.strip_prefix("data: ") else {
+                let Some(event) = parse_stream_line(&line)? else {
                     continue;
                 };
-                if data == "[DONE]" {
-                    continue;
-                }
-
-                let event: StreamEvent =
-                    serde_json::from_str(data).context("received an invalid streaming event")?;
 
                 match event.kind.as_str() {
                     "response.output_text.delta" => {

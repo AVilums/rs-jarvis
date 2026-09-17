@@ -1,15 +1,10 @@
 #![cfg_attr(windows, windows_subsystem = "windows")]
 
-mod chat;
-mod client;
-mod config;
 #[cfg(windows)]
 mod host;
-mod terminal;
 
 use anyhow::Result;
-use client::LlmClient;
-use config::Config;
+use rs_jarvis::{chat, client::LlmClient, config::Config, terminal};
 
 #[tokio::main]
 async fn main() -> Result<()> {
