@@ -1,0 +1,11 @@
+default = "openai"
+
+[profiles.openai]
+connector = "openai"
+model = "gpt-sol"
+api_key = "OPEN_API_KEY"
+
+[profiles.local]
+connector = "qwen"
+model = "qwen3:8b"
+base_url = "http://localhost::1234/v1"
