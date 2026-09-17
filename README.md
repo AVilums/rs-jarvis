@@ -1,4 +1,4 @@
-# Jarvis RS
+# Jarvis
 
 A small streaming terminal client for an LLM for easy, quick access.
 
