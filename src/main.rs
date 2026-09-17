@@ -1,16 +1,17 @@
-// mod config
-
+mod chat;
+mod client;
 mod config;
+mod terminal;
+
+use anyhow::Result;
+use client::LlmClient;
+use config::Config;
 
 #[tokio::main]
-async fn main() -> std::io::Result<()> {
-    // let config = Config::parse();
-    //
-    // let client = LlmClient::new(
-    //     config.api_key,
-    //     config.base_url,
-    //     config.model,
-    // );
-    //
-    // chat::run(client, config.system).await
+async fn main() -> Result<()> {
+    let _terminal = terminal::initialize()?;
+    let config = Config::load()?;
+    let client = LlmClient::new(config.selected_profile())?;
+
+    chat::run(client).await
 }
